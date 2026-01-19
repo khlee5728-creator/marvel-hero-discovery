@@ -3,6 +3,7 @@ import fallbackQuestions from "../data/fallbackQuestions"
 import { createQuestions } from "../services/mbtiService"
 import {
   buildQuestionsSignature,
+  generateLocalQuestions,
   shuffleQuestions,
 } from "../utils/questions"
 
@@ -23,39 +24,63 @@ export function QuizProvider({ children }) {
 
     try {
       const lastSignature = localStorage.getItem("lastQuestionSignature") || ""
-      const requestId = crypto.randomUUID()
-      let normalized = await createQuestions({ requestId })
-      let signature = buildQuestionsSignature(normalized)
+      const lastQuestionsRaw = localStorage.getItem("lastQuestions") || "[]"
+      let lastQuestions = []
+      try {
+        lastQuestions = JSON.parse(lastQuestionsRaw)
+      } catch {
+        lastQuestions = []
+      }
+      const avoidList = Array.isArray(lastQuestions)
+        ? lastQuestions.slice(0, 8)
+        : []
+
+      let normalized = []
+      let signature = ""
+      let attempts = 0
+
+      while (attempts < 3) {
+        const requestId = crypto.randomUUID()
+        normalized = await createQuestions({ requestId, avoidList })
+        signature = buildQuestionsSignature(normalized)
+        if (normalized.length && signature !== lastSignature) {
+          break
+        }
+        attempts += 1
+      }
 
       if (!normalized.length) {
-        normalized = shuffleQuestions(fallbackQuestions)
+        normalized = generateLocalQuestions()
         signature = buildQuestionsSignature(normalized)
       }
 
       if (signature && signature === lastSignature) {
-        const retryRequestId = crypto.randomUUID()
-        const retry = await createQuestions({ requestId: retryRequestId })
-        const retrySignature = buildQuestionsSignature(retry)
-        if (retry.length && retrySignature !== lastSignature) {
-          normalized = retry
-          signature = retrySignature
-        } else {
-          normalized = shuffleQuestions(normalized)
-          signature = buildQuestionsSignature(normalized)
-        }
+        const locallyGenerated = generateLocalQuestions()
+        normalized = locallyGenerated
+        signature = buildQuestionsSignature(normalized)
       }
 
       localStorage.setItem("lastQuestionSignature", signature)
+      localStorage.setItem(
+        "lastQuestions",
+        JSON.stringify(
+          normalized.map((question) => question.prompt).slice(0, 16)
+        )
+      )
       setQuestions(normalized)
       setStatus("ready")
     } catch (err) {
       setError(err)
-      const shuffledFallback = shuffleQuestions(fallbackQuestions)
+      const generated = generateLocalQuestions()
       localStorage.setItem(
         "lastQuestionSignature",
-        buildQuestionsSignature(shuffledFallback)
+        buildQuestionsSignature(generated)
       )
-      setQuestions(shuffledFallback)
+      localStorage.setItem(
+        "lastQuestions",
+        JSON.stringify(generated.map((question) => question.prompt).slice(0, 16))
+      )
+      setQuestions(generated)
       setStatus("ready")
     }
   }, [])

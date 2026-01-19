@@ -28,6 +28,15 @@ const fallbackQuestions = [
   },
   {
     id: "q4",
+    dimension: "EI",
+    prompt: "You find a new trainee. How do you help?",
+    options: [
+      { text: "Invite them to a group activity.", trait: "E" },
+      { text: "Show them a tip one-on-one.", trait: "I" },
+    ],
+  },
+  {
+    id: "q5",
     dimension: "SN",
     prompt: "You see a mysterious portal. What do you focus on?",
     options: [
@@ -36,7 +45,7 @@ const fallbackQuestions = [
     ],
   },
   {
-    id: "q5",
+    id: "q6",
     dimension: "SN",
     prompt: "Iron Man shows a new suit. What do you notice?",
     options: [
@@ -45,7 +54,7 @@ const fallbackQuestions = [
     ],
   },
   {
-    id: "q6",
+    id: "q7",
     dimension: "SN",
     prompt: "You explore Wakanda. What do you enjoy most?",
     options: [
@@ -54,7 +63,16 @@ const fallbackQuestions = [
     ],
   },
   {
-    id: "q7",
+    id: "q8",
+    dimension: "SN",
+    prompt: "Shuri shows a new tool. What catches your eye?",
+    options: [
+      { text: "The exact buttons and parts.", trait: "S" },
+      { text: "The amazing new possibilities.", trait: "N" },
+    ],
+  },
+  {
+    id: "q9",
     dimension: "FT",
     prompt: "A teammate makes a mistake. What do you do?",
     options: [
@@ -63,7 +81,7 @@ const fallbackQuestions = [
     ],
   },
   {
-    id: "q8",
+    id: "q10",
     dimension: "FT",
     prompt: "Two friends disagree. What helps most?",
     options: [
@@ -72,7 +90,7 @@ const fallbackQuestions = [
     ],
   },
   {
-    id: "q9",
+    id: "q11",
     dimension: "FT",
     prompt: "You must choose a mission. What matters?",
     options: [
@@ -81,7 +99,16 @@ const fallbackQuestions = [
     ],
   },
   {
-    id: "q10",
+    id: "q12",
+    dimension: "FT",
+    prompt: "A friend is upset about the rules. What do you do?",
+    options: [
+      { text: "Change the rules to be kind.", trait: "F" },
+      { text: "Keep rules fair for everyone.", trait: "T" },
+    ],
+  },
+  {
+    id: "q13",
     dimension: "PJ",
     prompt: "A mission starts in one hour. What do you prefer?",
     options: [
@@ -90,7 +117,7 @@ const fallbackQuestions = [
     ],
   },
   {
-    id: "q11",
+    id: "q14",
     dimension: "PJ",
     prompt: "The team is traveling. What do you pack?",
     options: [
@@ -99,12 +126,21 @@ const fallbackQuestions = [
     ],
   },
   {
-    id: "q12",
+    id: "q15",
     dimension: "PJ",
     prompt: "The plan changes suddenly. What do you do?",
     options: [
       { text: "Adjust the plan and keep it tidy.", trait: "J" },
       { text: "Go with the flow and improvise.", trait: "P" },
+    ],
+  },
+  {
+    id: "q16",
+    dimension: "PJ",
+    prompt: "You find a new route to the goal. What now?",
+    options: [
+      { text: "Stay on the planned route.", trait: "J" },
+      { text: "Try the new route for fun.", trait: "P" },
     ],
   },
 ]

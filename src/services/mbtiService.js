@@ -50,20 +50,27 @@ export function normalizeQuestions(payload) {
   return []
 }
 
-export async function createQuestions({ requestId } = {}) {
+export async function createQuestions({ requestId, avoidList = [] } = {}) {
   const response = await api.post("/mbti/questions", {
-    count: 12,
-    groups: { E: 3, N: 3, F: 3, P: 3 },
+    count: 16,
+    groups: { E: 4, N: 4, F: 4, P: 4 },
     level: "elementary",
     theme: "marvel",
     prompt: [
       "You are a friendly teacher for elementary students.",
-      "Create 12 MBTI questions set in the Marvel universe.",
+      "Create 16 MBTI questions set in the Marvel universe.",
       "Each question must have exactly 2 choices.",
       "Use simple, short English for kids.",
-      "Return 3 questions per dimension: EI, SN, TF, PJ.",
+      "Use varied sentence patterns. Avoid repeating the same template.",
+      "Make options clearly different in meaning, not just word swaps.",
+      "Return 4 questions per dimension: EI, SN, TF, PJ.",
       "Output JSON array with fields: id, dimension, prompt, options[].",
       "Each option must include: text, trait (E/I/S/N/T/F/J/P).",
+      avoidList.length
+        ? `Avoid repeating these exact questions or choices: ${avoidList.join(
+            " | "
+          )}.`
+        : "All questions must be new compared to the previous mission.",
       `Request ID: ${requestId || "none"}.`,
     ].join(" "),
     requestId,

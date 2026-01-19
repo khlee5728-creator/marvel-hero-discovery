@@ -1,6 +1,6 @@
 import { motion } from "framer-motion"
 
-function PowerGauge({ current = 0, total = 12 }) {
+function PowerGauge({ current = 0, total = 16 }) {
   const percent = total > 0 ? Math.round((current / total) * 100) : 0
 
   return (
