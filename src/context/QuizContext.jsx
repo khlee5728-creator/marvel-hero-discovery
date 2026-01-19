@@ -1,6 +1,10 @@
 import { createContext, useCallback, useMemo, useState } from "react"
 import fallbackQuestions from "../data/fallbackQuestions"
 import { createQuestions } from "../services/mbtiService"
+import {
+  buildQuestionsSignature,
+  shuffleQuestions,
+} from "../utils/questions"
 
 export const QuizContext = createContext(null)
 
@@ -18,12 +22,40 @@ export function QuizProvider({ children }) {
     setCurrentIndex(0)
 
     try {
-      const normalized = await createQuestions()
-      setQuestions(normalized.length ? normalized : fallbackQuestions)
+      const lastSignature = localStorage.getItem("lastQuestionSignature") || ""
+      const requestId = crypto.randomUUID()
+      let normalized = await createQuestions({ requestId })
+      let signature = buildQuestionsSignature(normalized)
+
+      if (!normalized.length) {
+        normalized = shuffleQuestions(fallbackQuestions)
+        signature = buildQuestionsSignature(normalized)
+      }
+
+      if (signature && signature === lastSignature) {
+        const retryRequestId = crypto.randomUUID()
+        const retry = await createQuestions({ requestId: retryRequestId })
+        const retrySignature = buildQuestionsSignature(retry)
+        if (retry.length && retrySignature !== lastSignature) {
+          normalized = retry
+          signature = retrySignature
+        } else {
+          normalized = shuffleQuestions(normalized)
+          signature = buildQuestionsSignature(normalized)
+        }
+      }
+
+      localStorage.setItem("lastQuestionSignature", signature)
+      setQuestions(normalized)
       setStatus("ready")
     } catch (err) {
       setError(err)
-      setQuestions(fallbackQuestions)
+      const shuffledFallback = shuffleQuestions(fallbackQuestions)
+      localStorage.setItem(
+        "lastQuestionSignature",
+        buildQuestionsSignature(shuffledFallback)
+      )
+      setQuestions(shuffledFallback)
       setStatus("ready")
     }
   }, [])

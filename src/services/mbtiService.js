@@ -50,7 +50,7 @@ export function normalizeQuestions(payload) {
   return []
 }
 
-export async function createQuestions() {
+export async function createQuestions({ requestId } = {}) {
   const response = await api.post("/mbti/questions", {
     count: 12,
     groups: { E: 3, N: 3, F: 3, P: 3 },
@@ -64,7 +64,9 @@ export async function createQuestions() {
       "Return 3 questions per dimension: EI, SN, TF, PJ.",
       "Output JSON array with fields: id, dimension, prompt, options[].",
       "Each option must include: text, trait (E/I/S/N/T/F/J/P).",
+      `Request ID: ${requestId || "none"}.`,
     ].join(" "),
+    requestId,
   })
 
   return normalizeQuestions(response.data)
