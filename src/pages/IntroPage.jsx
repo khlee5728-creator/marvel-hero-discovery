@@ -19,19 +19,18 @@ function IntroPage() {
         style={{ backgroundImage: "url('/assets/intro/marvel-intro.png')" }}
       />
       <div className="absolute inset-0 bg-black/50" />
-      <div className="relative z-10 space-y-2">
-        <p className="text-xs uppercase tracking-[0.3em] text-gray-200">
+      <div className="relative z-10 space-y-3">
+        <h1
+          className="text-4xl font-extrabold uppercase tracking-[0.1em] text-gray-100 drop-shadow-[0_6px_18px_rgba(0,0,0,0.7)] md:text-6xl"
+          style={{ fontFamily: "'Bangers', system-ui" }}
+        >
           Marvel Hero Discovery
-        </p>
-        <h1 className="text-4xl font-bold md:text-5xl">
-          Choose Your Heroic Path
         </h1>
-        <p className="max-w-xl text-sm text-gray-200 md:text-base">
-          16개의 선택으로 MBTI를 분석하고, 마블 세계관 속 나만의 히어로를
-          찾아봅니다.
+        <p className="mx-auto max-w-xl text-base text-gray-200 md:text-lg">
+          Find your inner superhero through MBTI! Which Avenger are you?
         </p>
       </div>
-      <div className="relative z-10 mt-6">
+      <div className="relative z-10 mt-20">
         <PrimaryButton onClick={handleStart}>
           <span className="flex items-center gap-2">
             <Play size={16} />

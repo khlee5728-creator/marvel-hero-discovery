@@ -35,29 +35,46 @@ function QuizPage() {
   }
 
   return (
-    <main className="flex flex-1 flex-col gap-8 px-6 py-10">
-      <PowerGauge current={Math.min(currentIndex + 1, total)} total={total} />
-      <section className="space-y-6 rounded-2xl bg-white/5 p-6">
-        <div className="space-y-2">
-          <p className="text-xs uppercase tracking-[0.3em] text-gray-400">
-            Question {currentIndex + 1} / {total}
-          </p>
-          <h2 className="text-xl font-semibold md:text-2xl">
-            {question.prompt}
-          </h2>
+    <main className="relative flex flex-1 flex-col overflow-hidden px-6 py-6">
+      <video
+        className="absolute inset-0 h-full w-full object-cover"
+        src="/assets/bg/hero-base.mp4"
+        autoPlay
+        muted
+        loop
+        playsInline
+      />
+      <div className="absolute inset-0 bg-black/55" />
+      <div className="relative z-10 mx-auto flex w-full max-w-5xl flex-1 flex-col gap-6 pt-6">
+        <div
+          className="text-lg uppercase tracking-[0.1em] text-gray-200 md:text-xl"
+          style={{ fontFamily: "'Bangers', system-ui" }}
+        >
+          Marvel Hero Discovery
         </div>
-        <div className="grid gap-3 md:grid-cols-2">
-          {question.options.map((option, index) => (
-            <button
-              key={`${question.id}-${index}`}
-              className="rounded-xl border border-white/10 bg-white/5 p-4 text-left text-sm hover:border-red-500"
-              onClick={() => handleSelect(option)}
-            >
-              {option.text}
-            </button>
-          ))}
-        </div>
-      </section>
+        <PowerGauge current={Math.min(currentIndex + 1, total)} total={total} />
+        <section className="space-y-6 rounded-2xl bg-black/55 p-6 text-white backdrop-blur-sm">
+          <div className="space-y-2">
+            <p className="text-xs uppercase tracking-[0.3em] text-gray-300">
+              Question {currentIndex + 1} / {total}
+            </p>
+            <h2 className="text-xl font-semibold drop-shadow md:text-2xl">
+              {question.prompt}
+            </h2>
+          </div>
+          <div className="grid gap-3 md:grid-cols-2">
+            {question.options.map((option, index) => (
+              <button
+                key={`${question.id}-${index}`}
+                className="rounded-xl border border-white/20 bg-white/10 p-4 text-left text-base text-white hover:border-red-400 hover:bg-white/15"
+                onClick={() => handleSelect(option)}
+              >
+                {option.text}
+              </button>
+            ))}
+          </div>
+        </section>
+      </div>
     </main>
   )
 }

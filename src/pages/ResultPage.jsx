@@ -24,7 +24,21 @@ function ResultPage() {
   }
 
   return (
-    <main className="flex flex-1 flex-col items-center justify-center gap-8 px-6 py-10 text-center">
+    <main className="relative flex flex-1 flex-col items-center justify-center gap-8 px-6 py-10 text-center">
+      <div
+        className="absolute left-6 top-6 text-lg uppercase tracking-[0.1em] text-gray-200 md:text-xl"
+        style={{ fontFamily: "'Bangers', system-ui" }}
+      >
+        Marvel Hero Discovery
+      </div>
+      <div className="absolute right-6 top-6">
+        <button
+          className="rounded-full border border-white/20 bg-white/10 px-4 py-2 text-xs uppercase tracking-wide text-gray-100 hover:bg-white/20"
+          onClick={() => navigate("/gallery")}
+        >
+          Hero Gallery
+        </button>
+      </div>
       <div className="space-y-2">
         <p className="text-xs uppercase tracking-[0.3em] text-gray-400">
           Your Hero Match
