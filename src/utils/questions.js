@@ -1,23 +1,23 @@
 export function buildQuestionsSignature(questions) {
-  if (!Array.isArray(questions)) return ""
+  if (!Array.isArray(questions)) return "";
   return questions
     .map((q) => {
-      const prompt = q?.prompt || ""
+      const prompt = q?.prompt || "";
       const options = (q?.options || [])
         .map((opt) => `${opt?.text || ""}:${opt?.trait || ""}`)
-        .join("|")
-      return `${prompt}::${options}`
+        .join("|");
+      return `${prompt}::${options}`;
     })
-    .join("||")
+    .join("||");
 }
 
 export function shuffleArray(items) {
-  const array = [...items]
+  const array = [...items];
   for (let i = array.length - 1; i > 0; i -= 1) {
-    const j = Math.floor(Math.random() * (i + 1))
-    ;[array[i], array[j]] = [array[j], array[i]]
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
   }
-  return array
+  return array;
 }
 
 export function shuffleQuestions(questions) {
@@ -25,8 +25,8 @@ export function shuffleQuestions(questions) {
     questions.map((question) => ({
       ...question,
       options: shuffleArray(question.options || []),
-    }))
-  )
+    })),
+  );
 }
 
 const HEROES = [
@@ -41,11 +41,11 @@ const HEROES = [
   "Doctor Strange",
   "Star-Lord",
   "Groot",
-  "Hawkeye",
+  "Hulk",
   "Ms. Marvel",
   "Falcon",
   "Rocket",
-]
+];
 
 const LOCATIONS = [
   "Avengers Tower",
@@ -58,7 +58,7 @@ const LOCATIONS = [
   "Sky base",
   "Museum",
   "City park",
-]
+];
 
 const TOOLS = [
   "web-shooters",
@@ -67,23 +67,31 @@ const TOOLS = [
   "hologram map",
   "energy gauntlet",
   "magic ring",
-]
+];
 
 function pickRandom(list) {
-  return list[Math.floor(Math.random() * list.length)]
+  return list[Math.floor(Math.random() * list.length)];
 }
 
 function pickMany(list, count) {
-  const pool = [...list]
-  const result = []
+  const pool = [...list];
+  const result = [];
   while (pool.length && result.length < count) {
-    const index = Math.floor(Math.random() * pool.length)
-    result.push(pool.splice(index, 1)[0])
+    const index = Math.floor(Math.random() * pool.length);
+    result.push(pool.splice(index, 1)[0]);
   }
-  return result
+  return result;
 }
 
-function buildQuestion(id, dimension, prompt, optionA, optionB, traitA, traitB) {
+function buildQuestion(
+  id,
+  dimension,
+  prompt,
+  optionA,
+  optionB,
+  traitA,
+  traitB,
+) {
   return {
     id,
     dimension,
@@ -92,14 +100,14 @@ function buildQuestion(id, dimension, prompt, optionA, optionB, traitA, traitB) 
       { text: optionA, trait: traitA },
       { text: optionB, trait: traitB },
     ],
-  }
+  };
 }
 
 function generateDimensionQuestions(dimension, traits, seedOffset = 0) {
-  const [traitA, traitB] = traits
-  const hero = pickRandom(HEROES)
-  const location = pickRandom(LOCATIONS)
-  const tool = pickRandom(TOOLS)
+  const [traitA, traitB] = traits;
+  const hero = pickRandom(HEROES);
+  const location = pickRandom(LOCATIONS);
+  const tool = pickRandom(TOOLS);
 
   const templates = {
     EI: [
@@ -111,7 +119,7 @@ function generateDimensionQuestions(dimension, traits, seedOffset = 0) {
           "Speak up and share ideas with everyone.",
           "Listen first and think before you talk.",
           traitA,
-          traitB
+          traitB,
         ),
       (id) =>
         buildQuestion(
@@ -121,7 +129,7 @@ function generateDimensionQuestions(dimension, traits, seedOffset = 0) {
           "Join the group and tell fun stories.",
           "Stay close to one friend and relax.",
           traitA,
-          traitB
+          traitB,
         ),
       (id) =>
         buildQuestion(
@@ -131,7 +139,7 @@ function generateDimensionQuestions(dimension, traits, seedOffset = 0) {
           "Welcome them and start a group game.",
           "Show them a quiet tip one-on-one.",
           traitA,
-          traitB
+          traitB,
         ),
       (id) =>
         buildQuestion(
@@ -141,7 +149,7 @@ function generateDimensionQuestions(dimension, traits, seedOffset = 0) {
           "Call the team and fix it together.",
           "Work on a solution by yourself first.",
           traitA,
-          traitB
+          traitB,
         ),
     ],
     SN: [
@@ -153,7 +161,7 @@ function generateDimensionQuestions(dimension, traits, seedOffset = 0) {
           "How it works right now.",
           "What it could be used for later.",
           traitA,
-          traitB
+          traitB,
         ),
       (id) =>
         buildQuestion(
@@ -163,7 +171,7 @@ function generateDimensionQuestions(dimension, traits, seedOffset = 0) {
           "Check the exact spot and details.",
           "Guess the big story behind it.",
           traitA,
-          traitB
+          traitB,
         ),
       (id) =>
         buildQuestion(
@@ -173,7 +181,7 @@ function generateDimensionQuestions(dimension, traits, seedOffset = 0) {
           "Remember clear facts and numbers.",
           "Notice patterns and hidden meaning.",
           traitA,
-          traitB
+          traitB,
         ),
       (id) =>
         buildQuestion(
@@ -183,7 +191,7 @@ function generateDimensionQuestions(dimension, traits, seedOffset = 0) {
           "Look at the materials and parts.",
           "Imagine future upgrades and ideas.",
           traitA,
-          traitB
+          traitB,
         ),
     ],
     TF: [
@@ -195,7 +203,7 @@ function generateDimensionQuestions(dimension, traits, seedOffset = 0) {
           "I care about how you feel.",
           "Let’s fix it step by step.",
           traitA,
-          traitB
+          traitB,
         ),
       (id) =>
         buildQuestion(
@@ -205,7 +213,7 @@ function generateDimensionQuestions(dimension, traits, seedOffset = 0) {
           "Choose what is kind for both.",
           "Choose what is most reasonable.",
           traitA,
-          traitB
+          traitB,
         ),
       (id) =>
         buildQuestion(
@@ -215,7 +223,7 @@ function generateDimensionQuestions(dimension, traits, seedOffset = 0) {
           "Pick the one that helps people most.",
           "Pick the one with the best strategy.",
           traitA,
-          traitB
+          traitB,
         ),
       (id) =>
         buildQuestion(
@@ -225,7 +233,7 @@ function generateDimensionQuestions(dimension, traits, seedOffset = 0) {
           "Adjust it to protect feelings.",
           "Keep it to stay fair for all.",
           traitA,
-          traitB
+          traitB,
         ),
     ],
     PJ: [
@@ -237,7 +245,7 @@ function generateDimensionQuestions(dimension, traits, seedOffset = 0) {
           "Make a schedule and follow it.",
           "Stay open and change as needed.",
           traitA,
-          traitB
+          traitB,
         ),
       (id) =>
         buildQuestion(
@@ -247,7 +255,7 @@ function generateDimensionQuestions(dimension, traits, seedOffset = 0) {
           "Pack early with a list.",
           "Pack quickly right before leaving.",
           traitA,
-          traitB
+          traitB,
         ),
       (id) =>
         buildQuestion(
@@ -257,7 +265,7 @@ function generateDimensionQuestions(dimension, traits, seedOffset = 0) {
           "Stick to the plan and stay on track.",
           "Try the new path and explore.",
           traitA,
-          traitB
+          traitB,
         ),
       (id) =>
         buildQuestion(
@@ -267,32 +275,32 @@ function generateDimensionQuestions(dimension, traits, seedOffset = 0) {
           "Rebuild the plan with clear steps.",
           "Go with the flow and improvise.",
           traitA,
-          traitB
+          traitB,
         ),
     ],
-  }
+  };
 
-  const pickCount = 4
-  const pickedTemplates = pickMany(templates[dimension] || [], pickCount)
+  const pickCount = 4;
+  const pickedTemplates = pickMany(templates[dimension] || [], pickCount);
 
   return pickedTemplates.map((template, index) => {
-    const id = `${dimension.toLowerCase()}-${seedOffset}-${index}`
-    return template(id)
-  })
+    const id = `${dimension.toLowerCase()}-${seedOffset}-${index}`;
+    return template(id);
+  });
 }
 
 export function generateLocalQuestions() {
-  const seed = Date.now()
+  const seed = Date.now();
   const dimensions = [
     { code: "EI", traits: ["E", "I"] },
     { code: "SN", traits: ["S", "N"] },
     { code: "TF", traits: ["T", "F"] },
     { code: "PJ", traits: ["J", "P"] },
-  ]
+  ];
 
   const questions = dimensions.flatMap((dimension, idx) =>
-    generateDimensionQuestions(dimension.code, dimension.traits, seed + idx)
-  )
+    generateDimensionQuestions(dimension.code, dimension.traits, seed + idx),
+  );
 
-  return shuffleQuestions(questions)
+  return shuffleQuestions(questions);
 }

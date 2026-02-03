@@ -60,9 +60,9 @@ const heroMatches = {
     image: "shuri.png",
   },
   ISTP: {
-    name: "Hawkeye",
-    traits: ["Calm", "Observant", "Steady"],
-    image: "hawkeye.png",
+    name: "Hulk",
+    traits: ["Powerful", "Fierce", "Resilient"],
+    image: "hulk.png",
   },
   ISFP: {
     name: "Wanda Maximoff",
@@ -79,6 +79,6 @@ const heroMatches = {
     traits: ["Playful", "Quick", "Bold"],
     image: "rocket.png",
   },
-}
+};
 
-export default heroMatches
+export default heroMatches;
