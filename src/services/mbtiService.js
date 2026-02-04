@@ -1,4 +1,5 @@
 import api from "./api"
+import { generateLocalQuestions } from "../utils/questions"
 
 const DIMENSION_TRAITS = {
   EI: ["E", "I"],
@@ -51,6 +52,10 @@ export function normalizeQuestions(payload) {
 }
 
 export async function createQuestions({ requestId, avoidList = [] } = {}) {
+  if (!api.defaults.baseURL) {
+    return generateLocalQuestions()
+  }
+
   const response = await api.post("/mbti/questions", {
     count: 16,
     groups: { E: 4, N: 4, F: 4, P: 4 },

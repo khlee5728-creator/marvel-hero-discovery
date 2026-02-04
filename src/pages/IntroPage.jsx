@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom"
-import { Play } from "lucide-react"
+import { GiRocket } from "react-icons/gi"
 import PrimaryButton from "../components/PrimaryButton.jsx"
 import useQuiz from "../hooks/useQuiz"
 
@@ -9,7 +9,7 @@ function IntroPage() {
 
   const handleStart = () => {
     startMission()
-    navigate("/loading")
+    navigate("/loading", { state: { startWithSound: true } })
   }
 
   return (
@@ -32,8 +32,8 @@ function IntroPage() {
       </div>
       <div className="relative z-10 mt-20">
         <PrimaryButton onClick={handleStart}>
-          <span className="flex items-center gap-2">
-            <Play size={16} />
+          <span className="group flex items-center gap-2">
+            <GiRocket className="text-lg text-yellow-300 transition-transform duration-200 group-hover:scale-110" />
             START MISSION
           </span>
         </PrimaryButton>

@@ -1,5 +1,6 @@
-import { useEffect } from "react"
+import { useEffect, useMemo } from "react"
 import { useNavigate } from "react-router-dom"
+import { GiChatBubble } from "react-icons/gi"
 import PowerGauge from "../components/PowerGauge.jsx"
 import useQuiz from "../hooks/useQuiz"
 
@@ -8,6 +9,11 @@ function QuizPage() {
   const { questions, currentIndex, selectAnswer, status } = useQuiz()
   const total = questions.length
   const question = questions[currentIndex]
+  const answerSfx = useMemo(() => {
+    const audio = new Audio("/assets/sfx/answer.mp3")
+    audio.volume = 0.6
+    return audio
+  }, [])
 
   useEffect(() => {
     if (status === "idle") {
@@ -16,6 +22,8 @@ function QuizPage() {
   }, [navigate, status])
 
   const handleSelect = (option) => {
+    answerSfx.currentTime = 0
+    answerSfx.play().catch(() => {})
     selectAnswer({
       questionId: question.id,
       trait: option.trait,
@@ -58,7 +66,8 @@ function QuizPage() {
             <p className="text-xs uppercase tracking-[0.3em] text-gray-300">
               Question {currentIndex + 1} / {total}
             </p>
-            <h2 className="text-xl font-semibold drop-shadow md:text-2xl">
+            <h2 className="group flex items-center gap-2 text-xl font-semibold drop-shadow md:text-2xl">
+              <GiChatBubble className="text-lg text-yellow-300 transition-transform duration-200 group-hover:scale-110" />
               {question.prompt}
             </h2>
           </div>
