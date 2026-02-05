@@ -31,7 +31,10 @@ function IntroPage() {
         </p>
       </div>
       <div className="relative z-10 mt-20">
-        <PrimaryButton onClick={handleStart}>
+        <PrimaryButton
+          onClick={handleStart}
+          className="hero-button-ring hero-button-shine transition-transform hover:scale-[1.03] active:scale-[0.98]"
+        >
           <span className="group flex items-center gap-2">
             <GiRocket className="text-lg text-yellow-300 transition-transform duration-200 group-hover:scale-110" />
             START MISSION

@@ -75,7 +75,7 @@ function QuizPage() {
             {question.options.map((option, index) => (
               <button
                 key={`${question.id}-${index}`}
-                className="rounded-xl border border-white/20 bg-white/10 p-4 text-left text-base text-white hover:border-red-400 hover:bg-white/15"
+                className="rounded-xl border border-white/20 bg-white/10 p-4 text-left text-base text-white hover:scale-[1.02] hover:border-orange-400 hover:bg-white/15 active:scale-[0.98]"
                 onClick={() => handleSelect(option)}
               >
                 {option.text}

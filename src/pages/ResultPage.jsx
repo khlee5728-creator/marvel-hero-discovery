@@ -1,28 +1,28 @@
-import { useMemo } from "react"
-import { motion } from "framer-motion"
-import { useNavigate } from "react-router-dom"
-import { GiCycle, GiPhotoCamera } from "react-icons/gi"
-import PrimaryButton from "../components/PrimaryButton.jsx"
-import heroMatches from "../data/heroMatches"
-import useQuiz from "../hooks/useQuiz"
-import { calculateMbti } from "../utils/mbti"
+import { useMemo } from "react";
+import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
+import { GiCycle, GiPhotoCamera } from "react-icons/gi";
+import PrimaryButton from "../components/PrimaryButton.jsx";
+import heroMatches from "../data/heroMatches";
+import useQuiz from "../hooks/useQuiz";
+import { calculateMbti } from "../utils/mbti";
 
 function ResultPage() {
-  const navigate = useNavigate()
-  const { answers, resetMission } = useQuiz()
+  const navigate = useNavigate();
+  const { answers, resetMission } = useQuiz();
 
   const result = useMemo(() => {
-    const mbti = calculateMbti(answers)
+    const mbti = calculateMbti(answers);
     return {
       mbti,
       hero: heroMatches[mbti] || heroMatches.ENFP,
-    }
-  }, [answers])
+    };
+  }, [answers]);
 
   const handleRestart = () => {
-    resetMission()
-    navigate("/")
-  }
+    resetMission();
+    navigate("/");
+  };
 
   return (
     <main className="relative flex flex-1 flex-col items-center justify-center gap-8 px-6 py-10 text-center">
@@ -51,7 +51,7 @@ function ResultPage() {
         </p>
       </div>
       <motion.div
-        className="flex w-full max-w-2xl flex-col overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-br from-white/10 via-white/5 to-transparent"
+        className="flex w-full max-w-2xl flex-col overflow-hidden rounded-3xl border border-white/20 bg-gradient-to-br from-white/20 via-white/10 to-white/5 shadow-[0_20px_60px_rgba(0,0,0,0.45)] backdrop-blur-md"
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
@@ -101,14 +101,17 @@ function ResultPage() {
           </div>
         </div>
       </motion.div>
-      <PrimaryButton onClick={handleRestart}>
+      <PrimaryButton
+        onClick={handleRestart}
+        className="transition-transform hover:scale-[1.03] active:scale-[0.98]"
+      >
         <span className="group flex items-center gap-2">
           <GiCycle className="text-lg text-yellow-300 transition-transform duration-200 group-hover:scale-110" />
           NEW MISSION
         </span>
       </PrimaryButton>
     </main>
-  )
+  );
 }
 
-export default ResultPage
+export default ResultPage;
