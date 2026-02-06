@@ -21,6 +21,7 @@ export function QuizProvider({ children }) {
     setError(null)
     setAnswers([])
     setCurrentIndex(0)
+    localStorage.removeItem("quizAnswers")
 
     try {
       const lastSignature = localStorage.getItem("lastQuestionSignature") || ""
@@ -89,6 +90,11 @@ export function QuizProvider({ children }) {
     setAnswers((prev) => {
       const next = [...prev]
       next[currentIndex] = answer
+      try {
+        localStorage.setItem("quizAnswers", JSON.stringify(next))
+      } catch {
+        // ignore storage errors
+      }
       return next
     })
     setCurrentIndex((prev) => Math.min(prev + 1, questions.length - 1))
@@ -100,6 +106,7 @@ export function QuizProvider({ children }) {
     setAnswers([])
     setCurrentIndex(0)
     setError(null)
+    localStorage.removeItem("quizAnswers")
   }, [])
 
   const value = useMemo(

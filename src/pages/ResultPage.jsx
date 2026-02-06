@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { GiCycle, GiPhotoCamera } from "react-icons/gi";
@@ -10,18 +10,40 @@ import { calculateMbti } from "../utils/mbti";
 function ResultPage() {
   const navigate = useNavigate();
   const { answers, resetMission } = useQuiz();
+  const [isMuted, setIsMuted] = useState(true);
+  const videoRef = useRef(null);
+  const storedAnswers = useMemo(() => {
+    try {
+      const raw = localStorage.getItem("quizAnswers") || "[]";
+      const parsed = JSON.parse(raw);
+      return Array.isArray(parsed) ? parsed : [];
+    } catch {
+      return [];
+    }
+  }, []);
 
   const result = useMemo(() => {
-    const mbti = calculateMbti(answers);
+    const effectiveAnswers = answers.length ? answers : storedAnswers;
+    const mbti = calculateMbti(effectiveAnswers);
     return {
       mbti,
       hero: heroMatches[mbti] || heroMatches.ENFP,
     };
-  }, [answers]);
+  }, [answers, storedAnswers]);
 
   const handleRestart = () => {
     resetMission();
     navigate("/");
+  };
+
+  const handleToggleSound = () => {
+    setIsMuted((prev) => {
+      const next = !prev;
+      if (videoRef.current) {
+        videoRef.current.muted = next;
+      }
+      return next;
+    });
   };
 
   return (
@@ -51,27 +73,49 @@ function ResultPage() {
         </p>
       </div>
       <motion.div
-        className="flex w-full max-w-2xl flex-col overflow-hidden rounded-3xl border border-white/20 bg-gradient-to-br from-white/20 via-white/10 to-white/5 shadow-[0_20px_60px_rgba(0,0,0,0.45)] backdrop-blur-md"
+        className="flex w-full max-w-2xl flex-col overflow-hidden rounded-3xl border-4 border-black bg-[#111827]/90 bg-[radial-gradient(circle_at_1px_1px,rgba(255,255,255,0.2)_1.25px,transparent_1.25px)] bg-[length:16px_16px] ring-2 ring-yellow-300/40 shadow-[0_0_30px_rgba(250,204,21,0.18),8px_8px_0_0_rgba(0,0,0,0.85)]"
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
       >
+        <div className="flex items-center justify-between border-b-2 border-black bg-yellow-300 px-6 py-2 text-xs font-bold uppercase tracking-[0.35em] text-black">
+          Hero File
+          <span className="rounded-full bg-black px-3 py-1 text-[10px] tracking-[0.25em] text-yellow-300">
+            Match
+          </span>
+        </div>
         <div className="grid gap-6 p-8 md:grid-cols-[260px,1fr] md:items-center md:text-left">
-          <div className="h-64 w-full overflow-hidden rounded-2xl bg-black/40">
+          <div className="relative h-64 w-full overflow-hidden rounded-2xl bg-black/40">
             {result.hero.video ? (
-              <video
-                className="h-full w-full object-cover"
-                autoPlay
-                loop
-                muted
-                playsInline
-                poster={`/assets/characters/${result.hero.image}`}
-              >
-                <source
-                  src={`/assets/characters/${result.hero.video}`}
-                  type="video/mp4"
-                />
-              </video>
+              <>
+                <video
+                  ref={videoRef}
+                  className="h-full w-full object-cover"
+                  autoPlay
+                  loop
+                  muted={isMuted}
+                  playsInline
+                  poster={`/assets/characters/${result.hero.image}`}
+                >
+                  <source
+                    src={`/assets/characters/${result.hero.video}`}
+                    type="video/mp4"
+                  />
+                </video>
+                <button
+                  className="absolute bottom-3 right-3 flex h-10 w-10 items-center justify-center rounded-full border border-white/15 transition hover:bg-white/10"
+                  aria-label={isMuted ? "Sound off" : "Sound on"}
+                  aria-pressed={!isMuted}
+                  onClick={handleToggleSound}
+                  type="button"
+                >
+                  <img
+                    className="h-6 w-6"
+                    src={`/assets/icons/${isMuted ? "sound-off.svg" : "sound-on.svg"}`}
+                    alt={isMuted ? "Sound off" : "Sound on"}
+                  />
+                </button>
+              </>
             ) : (
               <img
                 className="h-full w-full object-cover"
@@ -89,7 +133,7 @@ function ResultPage() {
               {result.hero.traits.map((trait) => (
                 <span
                   key={trait}
-                  className="rounded-full border border-white/20 bg-white/10 px-3 py-1 text-sm uppercase tracking-wide text-gray-100"
+                  className="inline-flex -rotate-3 skew-x-3 items-center rounded-md border-2 border-black bg-yellow-300 px-4 py-1.5 text-sm font-bold uppercase tracking-[0.18em] text-black shadow-[4px_4px_0_0_rgba(0,0,0,0.85)]"
                 >
                   {trait}
                 </span>
