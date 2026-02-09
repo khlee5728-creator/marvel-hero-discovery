@@ -7,7 +7,6 @@ function LoadingPage() {
   const location = useLocation();
   const { status, questions, startMission } = useQuiz();
   const startWithSound = Boolean(location.state?.startWithSound);
-  const [isVideoEnded, setIsVideoEnded] = useState(false);
   const [isMuted, setIsMuted] = useState(!startWithSound);
   const videoRef = useRef(null);
 
@@ -26,10 +25,10 @@ function LoadingPage() {
   }, [startWithSound]);
 
   useEffect(() => {
-    if (status === "ready" && questions.length > 0 && isVideoEnded) {
+    if (status === "ready" && questions.length > 0) {
       navigate("/quiz");
     }
-  }, [isVideoEnded, navigate, questions.length, status]);
+  }, [navigate, questions.length, status]);
 
   return (
     <main className="relative flex flex-1 flex-col items-center justify-center gap-6 overflow-hidden px-6 text-center">
@@ -38,10 +37,9 @@ function LoadingPage() {
         className="absolute inset-0 h-full w-full object-cover opacity-60"
         src="/assets/bg/loading.mp4"
         autoPlay
+        loop
         muted={isMuted}
         playsInline
-        onEnded={() => setIsVideoEnded(true)}
-        onError={() => setIsVideoEnded(true)}
       />
       <button
         type="button"

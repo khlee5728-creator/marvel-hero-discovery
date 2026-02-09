@@ -1,3 +1,4 @@
+import { useEffect } from "react"
 import { useNavigate } from "react-router-dom"
 import { GiRocket } from "react-icons/gi"
 import PrimaryButton from "../components/PrimaryButton.jsx"
@@ -5,7 +6,11 @@ import useQuiz from "../hooks/useQuiz"
 
 function IntroPage() {
   const navigate = useNavigate()
-  const { startMission } = useQuiz()
+  const { startMission, prefetchQuestions } = useQuiz()
+
+  useEffect(() => {
+    prefetchQuestions()
+  }, [prefetchQuestions])
 
   const handleStart = () => {
     startMission()

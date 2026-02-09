@@ -1,4 +1,4 @@
-import { createContext, useCallback, useMemo, useState } from "react"
+import { createContext, useCallback, useMemo, useRef, useState } from "react"
 import fallbackQuestions from "../data/fallbackQuestions"
 import { createQuestions } from "../services/mbtiService"
 import {
@@ -9,12 +9,81 @@ import {
 
 export const QuizContext = createContext(null)
 
+const MAX_HISTORY = 64
+
+function buildQuestionKey(question) {
+  const prompt = question?.prompt || ""
+  const options = (question?.options || [])
+    .map((option) => `${option?.text || ""}:${option?.trait || ""}`)
+    .join("|")
+  return `${prompt}::${options}`
+}
+
+function countOverlap(nextQuestions, previousKeys) {
+  if (!Array.isArray(nextQuestions) || !Array.isArray(previousKeys)) return 0
+  const nextKeys = nextQuestions.map(buildQuestionKey)
+  const previousSet = new Set(previousKeys)
+  return nextKeys.filter((key) => previousSet.has(key)).length
+}
+
+function loadHistory() {
+  try {
+    const raw = localStorage.getItem("questionHistory") || "[]"
+    const parsed = JSON.parse(raw)
+    return Array.isArray(parsed) ? parsed : []
+  } catch {
+    return []
+  }
+}
+
+function saveHistory(history, newKeys) {
+  const combined = [...newKeys, ...history]
+  const unique = [...new Set(combined)].slice(0, MAX_HISTORY)
+  localStorage.setItem("questionHistory", JSON.stringify(unique))
+}
+
+async function fetchNewQuestions() {
+  const history = loadHistory()
+  const avoidList = history.slice(0, MAX_HISTORY)
+
+  let normalized = []
+
+  const requestId = crypto.randomUUID()
+  normalized = await createQuestions({ requestId, avoidList })
+
+  if (!normalized.length) {
+    const retryId = crypto.randomUUID()
+    normalized = await createQuestions({ requestId: retryId, avoidList })
+  }
+
+  if (!normalized.length || countOverlap(normalized, history) > 0) {
+    normalized = generateLocalQuestions()
+    if (countOverlap(normalized, history) > 0 && history.length > 32) {
+      const trimmedHistory = history.slice(0, 32)
+      localStorage.setItem("questionHistory", JSON.stringify(trimmedHistory))
+    }
+  }
+
+  const signature = buildQuestionsSignature(normalized)
+  const newKeys = normalized.map(buildQuestionKey)
+  saveHistory(history, newKeys)
+  localStorage.setItem("lastQuestionSignature", signature)
+
+  return normalized
+}
+
 export function QuizProvider({ children }) {
   const [status, setStatus] = useState("idle")
   const [questions, setQuestions] = useState([])
   const [answers, setAnswers] = useState([])
   const [currentIndex, setCurrentIndex] = useState(0)
   const [error, setError] = useState(null)
+  const prefetchRef = useRef(null)
+
+  const prefetchQuestions = useCallback(() => {
+    if (prefetchRef.current) return
+    prefetchRef.current = fetchNewQuestions().catch(() => null)
+  }, [])
 
   const startMission = useCallback(async () => {
     setStatus("loading")
@@ -24,62 +93,28 @@ export function QuizProvider({ children }) {
     localStorage.removeItem("quizAnswers")
 
     try {
-      const lastSignature = localStorage.getItem("lastQuestionSignature") || ""
-      const lastQuestionsRaw = localStorage.getItem("lastQuestions") || "[]"
-      let lastQuestions = []
-      try {
-        lastQuestions = JSON.parse(lastQuestionsRaw)
-      } catch {
-        lastQuestions = []
-      }
-      const avoidList = Array.isArray(lastQuestions)
-        ? lastQuestions.slice(0, 8)
-        : []
+      let normalized = null
 
-      let normalized = []
-      let signature = ""
-      let attempts = 0
-
-      while (attempts < 3) {
-        const requestId = crypto.randomUUID()
-        normalized = await createQuestions({ requestId, avoidList })
-        signature = buildQuestionsSignature(normalized)
-        if (normalized.length && signature !== lastSignature) {
-          break
-        }
-        attempts += 1
+      if (prefetchRef.current) {
+        normalized = await prefetchRef.current
+        prefetchRef.current = null
       }
 
-      if (!normalized.length) {
-        normalized = generateLocalQuestions()
-        signature = buildQuestionsSignature(normalized)
+      if (!normalized || !normalized.length) {
+        normalized = await fetchNewQuestions()
       }
 
-      if (signature && signature === lastSignature) {
-        const locallyGenerated = generateLocalQuestions()
-        normalized = locallyGenerated
-        signature = buildQuestionsSignature(normalized)
-      }
-
-      localStorage.setItem("lastQuestionSignature", signature)
-      localStorage.setItem(
-        "lastQuestions",
-        JSON.stringify(
-          normalized.map((question) => question.prompt).slice(0, 16)
-        )
-      )
       setQuestions(normalized)
       setStatus("ready")
     } catch (err) {
       setError(err)
       const generated = generateLocalQuestions()
+      const newKeys = generated.map(buildQuestionKey)
+      const history = loadHistory()
+      saveHistory(history, newKeys)
       localStorage.setItem(
         "lastQuestionSignature",
         buildQuestionsSignature(generated)
-      )
-      localStorage.setItem(
-        "lastQuestions",
-        JSON.stringify(generated.map((question) => question.prompt).slice(0, 16))
       )
       setQuestions(generated)
       setStatus("ready")
@@ -119,8 +154,9 @@ export function QuizProvider({ children }) {
       startMission,
       selectAnswer,
       resetMission,
+      prefetchQuestions,
     }),
-    [status, questions, answers, currentIndex, error, startMission, selectAnswer, resetMission]
+    [status, questions, answers, currentIndex, error, startMission, selectAnswer, resetMission, prefetchQuestions]
   )
 
   return <QuizContext.Provider value={value}>{children}</QuizContext.Provider>

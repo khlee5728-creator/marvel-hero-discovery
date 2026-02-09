@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { GiCycle, GiPhotoCamera } from "react-icons/gi";
@@ -9,7 +9,11 @@ import { calculateMbti } from "../utils/mbti";
 
 function ResultPage() {
   const navigate = useNavigate();
-  const { answers, resetMission } = useQuiz();
+  const { answers, resetMission, prefetchQuestions } = useQuiz();
+
+  useEffect(() => {
+    prefetchQuestions();
+  }, [prefetchQuestions]);
   const [isMuted, setIsMuted] = useState(true);
   const videoRef = useRef(null);
   const storedAnswers = useMemo(() => {
